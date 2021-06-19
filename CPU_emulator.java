@@ -16,76 +16,51 @@ public class CPU_emulator {
     static String methodDecision;
     static int variableDecision;
 
-    static String okunan;
+    static String read;
 
-    static HashMap<Integer, Integer> mapAc = new HashMap<>();//<ulaşılmaya çalışılan değerin indisi , ac değeri>
+    static HashMap<Integer, Integer> mapAc = new HashMap<>();//<index of the element we try to reach , ac value>
 
-    static ArrayList<Integer> splitted0 = new ArrayList<Integer>();//program.txt okunan satırın ilk değerleri(pc değerleri)
-    static ArrayList<String> splitted1 = new ArrayList<String>();//program.txt okunan satırın 2. değerleri (methodName)
-    static ArrayList<String> splitted2 = new ArrayList<String>();//program.txt okunan satırın 3. değerleri (işleme alınacak değer)
+    static ArrayList<Integer> splitted0 = new ArrayList<Integer>();//program.txt first element of the line (pc value)
+    static ArrayList<String> splitted1 = new ArrayList<String>();//program.txt second element of the line (methodName)
+    static ArrayList<String> splitted2 = new ArrayList<String>();//program.txt third element of the line (value to process)
 
 
     public static void main(String[] args) {
 
         try {
-            String fileName = "C:\\Users\\Lenovo\\Desktop\\orgSon.txt";
+            String fileName = "C:\\Users\\Lenovo\\Desktop\\to_execute.txt";
             File file = new File(fileName);
             BufferedReader buff = new BufferedReader(new FileReader(file));
             String readLine = "";
 
             while ((readLine = buff.readLine()) != null) {//okunabilirlik açısından kolay olması için if'ler || ile birleştirilmedi
-                okunan = readLine;
-                String[] splittedArray = okunan.split(" ", 3);
+                read = readLine;
+                String[] splittedArray = read.split(" ", 3);
                 if (splittedArray[1].trim().equalsIgnoreCase("START")) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
+                    splitted0.add(Integer.parseInt(read.split(" ")[0].trim()));
+                    splitted1.add(read.split(" ")[1]);
                     splitted2.add("null");
 
                 } else if ((splittedArray[1].trim().equalsIgnoreCase("HALT"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
+                    splitted0.add(Integer.parseInt(read.split(" ")[0].trim()));
+                    splitted1.add(read.split(" ")[1]);
                     splitted2.add("null");
                     break;
 
                 } else if ((splittedArray[1].trim().equalsIgnoreCase("DISP"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
+                    splitted0.add(Integer.parseInt(read.split(" ")[0].trim()));
+                    splitted1.add(read.split(" ")[1]);
                     splitted2.add("null");
 
                 } else if ((splittedArray[1].trim().equalsIgnoreCase("SWAP"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add("null");
-
-                } else if ((splittedArray[1].trim().equalsIgnoreCase("STOREI"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add("null");
-
-                } else if ((splittedArray[1].trim().equalsIgnoreCase("LOADI"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add("null");
-
-                } else if ((splittedArray[1].trim().equalsIgnoreCase("POP"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add("null");
-
-                } else if ((splittedArray[1].trim().equalsIgnoreCase("RETURN"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add("null");
-
-                } else if ((splittedArray[1].trim().equalsIgnoreCase("DASC"))) {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
+                    splitted0.add(Integer.parseInt(read.split(" ")[0].trim()));
+                    splitted1.add(read.split(" ")[1]);
                     splitted2.add("null");
 
                 } else {
-                    splitted0.add(Integer.parseInt(okunan.split(" ")[0].trim()));
-                    splitted1.add(okunan.split(" ")[1]);
-                    splitted2.add(okunan.split(" ")[2].trim());
+                    splitted0.add(Integer.parseInt(read.split(" ")[0].trim()));
+                    splitted1.add(read.split(" ")[1]);
+                    splitted2.add(read.split(" ")[2].trim());
                 }
 
             }
@@ -98,21 +73,21 @@ public class CPU_emulator {
     }
 
     /*
-    program akışını sağlamak için gerekli methodlar
+    program flow
      */
-    public static void sendToDecision(int pc) {//jump işlemlerini sağlamak ve jump olmadığı taktirde programı normal akışında devam ettirmek için(pc parametresi artırılarak methdolardan geri yollanıyor)
+    public static void sendToDecision(int pc) {// In order to provide "jump" and/or provide the flow of the program        
         int i = pc;
 
         if (splitted2.get(i).equalsIgnoreCase("null")) {
-            //System.out.println("PC DEĞERİ " + pc);//deneme
+            //System.out.println("PC VALUE " + pc);//to try
             decision2(splitted1.get(i));
         } else {
-            //System.out.println("PC DEĞERİ " + pc);//deneme
+            //System.out.println("PC VALUE " + pc);//to try
             decision1(splitted1.get(i), splitted2.get(i));
         }
     }
 
-    public static void decision1(String string1, String string2) {// 3 değerli (Integer(pc değeri) - String(methodName) - Integer(işleme alınacak sayı)) okunanlar
+    public static void decision1(String string1, String string2) {// 3 values (Integer(pc value) - String(methodName) - Integer(number to process))
         methodDecision = string1.toUpperCase().trim();
         variableDecision = Integer.parseInt(string2);
         switch (methodDecision) {
@@ -152,15 +127,11 @@ public class CPU_emulator {
                 break;
             case "MULM":
                 mulm(variableDecision);
-                break;
-            case "PUSH":
-                push(variableDecision);
-                break;
-
+                break;         
         }
     }
 
-    public static void decision2(String string1) {// 2 değerli (Integer(pc değeri) - String(methodName) olanlar için)
+    public static void decision2(String string1) {// 2 values (Integer(pc value) - String(methodName))
         methodDecision = string1.toUpperCase().trim();
         switch (methodDecision) {
             case "START":
@@ -172,36 +143,14 @@ public class CPU_emulator {
             case "DISP":
                 disp();
                 break;
-            case "POP":
-                pop();
-                break;
-            case "RETURN":
-                returnMethod();
-                break;
-            case "LOADI":
-                loadı();
-                break;
-            case "STOREI":
-                storeı();
-                break;
-            case "DASC":
-                dasc();
-                break;
-            /*case "ADDTORESULTARRAY"://disp yerine disp2() kullanılmasına izin verildiği taktirde kullanılır
-                toSaveResult();
-                break;*/
-            case "SWAP":
-                swap();
-                break;
-
         }
     }
 
     /*
-    program işlemleri
+    program processes
      */
     public static void start() {
-        System.out.println("Program başlatıldı(start komutu işleme alındı)");
+        System.out.println("Program is successfully started (START is executed)");
         sendToDecision(++pc);
     }
 
@@ -215,20 +164,9 @@ public class CPU_emulator {
         sendToDecision(++pc);
     }
 
-    public static void loadı() {
-        ac = mapAc.get(ax);
-        sendToDecision(++pc);
-    }
-
-    public static void storeı() {
-        mapAc.put(ax, ac);
-        sendToDecision(++pc);
-    }
-
     public static void store(int param) {
         mapAc.put(param, ac);
         sendToDecision(++pc);
-
     }
 
     public static void cmpm(int param) {
@@ -240,89 +178,49 @@ public class CPU_emulator {
             flag = 0;
         }
         sendToDecision(++pc);
-
     }
 
     public static void cjmp(int param) {
         if (flag > 0) {
             pc = param;
             sendToDecision(pc);
-        } else {
-            pc = pc;
+        } else {            
             sendToDecision(++pc);
         }
-
     }
 
     public static void jmp(int param) {
         pc = param;
         sendToDecision(pc);
-
     }
 
     public static void add(int param) {
         ac += param;
         sendToDecision(++pc);
-
     }
 
     public static void addm(int param) {
         ac += mapAc.get(param);
         sendToDecision(++pc);
-
     }
 
     public static void subm(int param) {
         ac -= mapAc.get(param);
         sendToDecision(++pc);
-
     }
 
     public static void sub(int param) {
         ac -= param;
         sendToDecision(++pc);
-
     }
 
     public static void mul(int param) {
         ac *= param;
         sendToDecision(++pc);
-
     }
 
     public static void mulm(int param) {
         ac *= mapAc.get(param);
-        sendToDecision(++pc);
-
-    }
-
-    public static void push(int param) {
-        stack.push(param);
-        sendToDecision(++pc);
-
-    }
-
-    public static void pop() {
-        ac = stack.pop();
-        sendToDecision(++pc);
-
-    }
-
-    public static void returnMethod() {
-        pc = stack.pop();
-        sendToDecision(pc);
-
-    }
-
-    public static void dasc() {
-
-    }
-
-    public static void swap() {
-        int swapAc = ac;//eşitlenecek değerin kaybolmaması için değişkene atandı
-        int swapAx = ax;//eşitlenecek değerin kaybolmaması için değişkene atandı
-        ac = swapAx;
-        ax = swapAc;
         sendToDecision(++pc);
     }
 
@@ -333,8 +231,7 @@ public class CPU_emulator {
 
  
     public static void halt() {
-        System.out.println("program durduruldu(halt komutu işleme alındı)");
-
+        System.out.println("program flow is stopped (HALT is executed)");
     }
 
 }
