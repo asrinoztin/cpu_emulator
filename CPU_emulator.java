@@ -33,7 +33,7 @@ public class CPU_emulator {
             BufferedReader buff = new BufferedReader(new FileReader(file));
             String readLine = "";
 
-            while ((readLine = buff.readLine()) != null) {//okunabilirlik açısından kolay olması için if'ler || ile birleştirilmedi
+            while ((readLine = buff.readLine()) != null) {
                 read = readLine;
                 String[] splittedArray = read.split(" ", 3);
                 if (splittedArray[1].trim().equalsIgnoreCase("START")) {
